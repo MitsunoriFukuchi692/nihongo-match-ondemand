@@ -1,0 +1,197 @@
+import './teacher-dashboard.css';
+
+.teacher-dashboard {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.teacher-dashboard h2 {
+  color: #333;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.teacher-dashboard h3 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.status-section {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.offline-section,
+.online-section {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+}
+
+.online-section {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.online-badge {
+  display: inline-block;
+  background: #10b981;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin: 15px 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.offline-section .form-group {
+  margin-bottom: 15px;
+}
+
+.offline-section .form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.offline-section .form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.offline-section .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  margin-top: 15px;
+}
+
+.online-section p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.online-section .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.requests-section {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.request-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.request-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.request-info p {
+  margin: 10px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.request-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.request-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.btn-reject {
+  background: #f97316;
+  color: white;
+}
+
+.btn-reject:hover {
+  background: #ea580c;
+  transform: translateY(-2px);
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 30px;
+  font-size: 14px;
+}
+
+.message {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid;
+}
+
+.message-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-left-color: #10b981;
+}
+
+.message-error {
+  background-color: #fee2e2;
+  color: #7f1d1d;
+  border-left-color: #ef4444;
+}
+
+.message-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-left-color: #3b82f6;
+}
