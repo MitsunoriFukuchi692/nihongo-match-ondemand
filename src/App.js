@@ -7,10 +7,12 @@ import LearnerRegistration from './components/LearnerRegistration';
 import TeacherDashboard from './components/TeacherDashboard';
 import LessonRoom from './components/LessonRoom';
 import TeacherProfile from './components/TeacherProfile';
+import TermsOfService from './components/TermsOfService';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
-  const [selectedTeacherId, setSelectedTeacherId] = useState(null); // ✅ 選択された講師ID
+  const [selectedTeacherId, setSelectedTeacherId] = useState(null);
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [teachers, setTeachers] = useState([]);
@@ -35,7 +37,7 @@ function App() {
 
   // Socket.io 接続
   useEffect(() => {
-    console.log('🔌 Socket.io 接続開始...');
+    console.log('📡 Socket.io 接続開始...');
     
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
     const newSocket = io(BACKEND_URL, {
@@ -60,28 +62,16 @@ function App() {
       setTeachers(data);
     });
 
-    // 講師一覧が更新された
     newSocket.on('teachers_list_updated', (data) => {
       console.log('📄 講師リストが更新されました:', data);
-      console.log('🔍 各講師のIDを確認:');
-      data.forEach(teacher => {
-        console.log(`   - ${teacher.name}: socketId=${teacher.socketId}, id=${teacher.id}`);
-      });
       setTeachers(data);
     });
 
-    // ✅ lesson_data イベントを受け取る
     newSocket.on('lesson_data', (data) => {
-      console.log('📋 ========== lesson_data イベント受け取り ==========');
       console.log('📋 lesson_data:', data);
-      console.log('   lessonId:', data.lessonId);
-      console.log('   teacherId:', data.teacherId);
-      console.log('   studentId:', data.studentId);
       setLessonData(data);
-      console.log('✅ lesson_data を state に保存しました\n');
     });
 
-    // レッスンマッチング
     newSocket.on('lesson_matched', (data) => {
       console.log('✅ レッスンマッチング:', data);
       setMatchedTeacher(data);
@@ -90,7 +80,7 @@ function App() {
     setSocket(newSocket);
 
     return () => {
-      console.log('🔌 Socket.io を切断します');
+      console.log('📡 Socket.io を切断します');
       newSocket.close();
     };
   }, []);
@@ -106,16 +96,12 @@ function App() {
 
   const addLearner = (learner) => {
     console.log('✅ 学習者を登録しました:', learner);
-    // ✅ learnerデータは既にlocalStorageに保存されている（LearnerRegistration.jsで）
-    
-    // 2秒後にホームに自動遷移
     setTimeout(() => {
       console.log('🏠 ホームページに自動遷移します');
       setCurrentPage('home');
     }, 2000);
   };
 
-  // ホーム（TeacherList）からマッチング情報を受け取る
   const handleStudentMatched = (matchedData, studentData) => {
     console.log('🎓 学習者がマッチングされました:', matchedData);
     setCurrentPage('lesson-room');
@@ -125,7 +111,6 @@ function App() {
     setLessonData(null);
   };
 
-  // TeacherDashboardからマッチング情報を受け取る
   const handleTeacherMatched = (matchedData, teacher) => {
     console.log('👨‍🏫 講師がマッチングされました:', matchedData);
     setCurrentPage('lesson-room');
@@ -135,16 +120,14 @@ function App() {
     setLessonData(null);
   };
 
-  // ✅ 講師詳細ページに遷移
   const handleViewTeacherProfile = (teacherId) => {
     console.log('📄 講師詳細ページに遷移:', teacherId);
     setSelectedTeacherId(teacherId);
     setCurrentPage('teacher-profile');
   };
 
-  // ✅ 講師リストに戻る
   const handleBackToTeacherList = () => {
-    console.log('← 講師リストに戻ります');
+    console.log('↑ 講師リストに戻ります');
     setSelectedTeacherId(null);
     setCurrentPage('home');
   };
@@ -185,6 +168,20 @@ function App() {
             onClick={() => setCurrentPage('learner-register')}
           >
             学習者登録
+          </button>
+          
+          {/* ✅ 利用規約とプライバシーポリシーボタンを追加 */}
+          <button 
+            className={currentPage === 'terms' ? 'nav-btn active' : 'nav-btn'}
+            onClick={() => setCurrentPage('terms')}
+          >
+            📋 利用規約
+          </button>
+          <button 
+            className={currentPage === 'privacy' ? 'nav-btn active' : 'nav-btn'}
+            onClick={() => setCurrentPage('privacy')}
+          >
+            🔒 プライバシー
           </button>
         </nav>
       </header>
@@ -238,6 +235,16 @@ function App() {
         {/* 学習者登録 */}
         {currentPage === 'learner-register' && (
           <LearnerRegistration onSubmit={addLearner} />
+        )}
+
+        {/* ✅ 利用規約ページ */}
+        {currentPage === 'terms' && (
+          <TermsOfService />
+        )}
+
+        {/* ✅ プライバシーポリシーページ */}
+        {currentPage === 'privacy' && (
+          <PrivacyPolicy />
         )}
       </main>
     </div>

@@ -11,3 +11,102 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* 利用規約・プライバシーポリシーのスタイル */
+
+.terms-container,
+.privacy-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f1e8;
+  min-height: 100vh;
+}
+
+.terms-content,
+.privacy-content {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  line-height: 1.8;
+  color: #333;
+}
+
+.terms-content h1,
+.privacy-content h1 {
+  font-size: 32px;
+  color: #667eea;
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #667eea;
+  padding-bottom: 15px;
+}
+
+.terms-section,
+.privacy-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9ff;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+}
+
+.terms-section h2,
+.privacy-section h2 {
+  font-size: 20px;
+  color: #667eea;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.terms-section p,
+.privacy-section p {
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.terms-section ul,
+.privacy-section ul {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.terms-section li,
+.privacy-section li {
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.terms-footer,
+.privacy-footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid #e0e0e0;
+  color: #999;
+  font-size: 14px;
+}
+
+/* スマートフォン対応 */
+@media (max-width: 768px) {
+  .terms-content,
+  .privacy-content {
+    padding: 20px;
+  }
+
+  .terms-content h1,
+  .privacy-content h1 {
+    font-size: 24px;
+  }
+
+  .terms-section h2,
+  .privacy-section h2 {
+    font-size: 18px;
+  }
+
+  .terms-section,
+  .privacy-section {
+    padding: 15px;
+  }
+}
