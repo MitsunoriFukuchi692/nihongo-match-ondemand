@@ -9,6 +9,9 @@ import LessonRoom from './components/LessonRoom';
 import TeacherProfile from './components/TeacherProfile';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import Login from './components/Login';
+import Register from './components/Register';
+import Contact from './components/Contact';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -20,8 +23,24 @@ function App() {
   const [studentInfo, setStudentInfo] = useState(null);
   const [teacherInfo, setTeacherInfo] = useState(null);
   const [lessonData, setLessonData] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authPage, setAuthPage] = useState('login');
 
-  // URLクエリパラメータから role を自動選択
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
+      console.log('✅ 保存されたユーザー情報を読み込みました');
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    setCurrentUser(null);
+    setCurrentPage('home');
+    console.log('🚪 ログアウトしました');
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const role = params.get('role');
@@ -35,7 +54,6 @@ function App() {
     }
   }, []);
 
-  // Socket.io 接続
   useEffect(() => {
     console.log('📡 Socket.io 接続開始...');
     
@@ -137,114 +155,174 @@ function App() {
       <header className="header">
         <h1>🌸 日本語会話マッチング</h1>
         <nav className="nav">
-          <button 
-            className={currentPage === 'home' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('home')}
-          >
-            ホーム
-          </button>
-          <button 
-            className={currentPage === 'teacher-dashboard' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('teacher-dashboard')}
-          >
-            講師用
-          </button>
-          {matchedTeacher && (
-            <button 
-              className={currentPage === 'lesson-room' ? 'nav-btn active' : 'nav-btn'}
-              onClick={() => setCurrentPage('lesson-room')}
-            >
-              🎓 レッスン中
-            </button>
+          {currentUser ? (
+            <>
+              <button 
+                className={currentPage === 'home' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('home')}
+              >
+                ホーム
+              </button>
+              <button 
+                className={currentPage === 'teacher-dashboard' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('teacher-dashboard')}
+              >
+                講師用
+              </button>
+              {matchedTeacher && (
+                <button 
+                  className={currentPage === 'lesson-room' ? 'nav-btn active' : 'nav-btn'}
+                  onClick={() => setCurrentPage('lesson-room')}
+                >
+                  🎓 レッスン中
+                </button>
+              )}
+              <button 
+                className={currentPage === 'teacher-register' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('teacher-register')}
+              >
+                講師登録
+              </button>
+              <button 
+                className={currentPage === 'learner-register' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('learner-register')}
+              >
+                学習者登録
+              </button>
+              <button 
+                className={currentPage === 'terms' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('terms')}
+              >
+                📋 利用規約
+              </button>
+              <button 
+                className={currentPage === 'privacy' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('privacy')}
+              >
+                🔒 プライバシー
+              </button>
+              <button 
+                className={currentPage === 'contact' ? 'nav-btn active' : 'nav-btn'}
+                onClick={() => setCurrentPage('contact')}
+              >
+                📧 お問い合わせ
+              </button>
+            </>
+          ) : (
+            <>
+              {authPage === 'login' && (
+                <button 
+                  className="nav-btn"
+                  onClick={() => setAuthPage('register')}
+                >
+                  📝 新規登録
+                </button>
+              )}
+              {authPage === 'register' && (
+                <button 
+                  className="nav-btn"
+                  onClick={() => setAuthPage('login')}
+                >
+                  🔐 ログイン
+                </button>
+              )}
+            </>
           )}
-          <button 
-            className={currentPage === 'teacher-register' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('teacher-register')}
-          >
-            講師登録
-          </button>
-          <button 
-            className={currentPage === 'learner-register' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('learner-register')}
-          >
-            学習者登録
-          </button>
-          
-          {/* ✅ 利用規約とプライバシーポリシーボタンを追加 */}
-          <button 
-            className={currentPage === 'terms' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('terms')}
-          >
-            📋 利用規約
-          </button>
-          <button 
-            className={currentPage === 'privacy' ? 'nav-btn active' : 'nav-btn'}
-            onClick={() => setCurrentPage('privacy')}
-          >
-            🔒 プライバシー
-          </button>
         </nav>
+
+        {currentUser && (
+          <div className="user-section">
+            <span>👤 {currentUser.name}</span>
+            <button 
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              🚪 ログアウト
+            </button>
+          </div>
+        )}
       </header>
 
       <main className="main-content">
-        {/* ホーム - 講師リスト + レッスン申込（統合） */}
-        {currentPage === 'home' && socket && (
-          <TeacherList 
-            teachers={teachers} 
-            socket={socket} 
-            isConnected={isConnected}
-            onViewProfile={handleViewTeacherProfile}
-            onMatched={handleStudentMatched}
-          />
-        )}
+        {!currentUser ? (
+          <>
+            {authPage === 'login' && (
+              <Login onLoginSuccess={setCurrentUser} />
+            )}
+            {authPage === 'register' && (
+              <Register onRegisterSuccess={(user) => {
+                setCurrentUser(user);
+                setAuthPage('login');
+              }} />
+            )}
+          </>
+        ) : (
+          <>
+            {/* ホーム - 講師リスト */}
+            {currentPage === 'home' && socket && (
+              <TeacherList 
+                teachers={teachers} 
+                socket={socket} 
+                isConnected={isConnected}
+                onViewProfile={handleViewTeacherProfile}
+                onMatched={handleStudentMatched}
+              />
+            )}
 
-        {/* 講師詳細ページ */}
-        {currentPage === 'teacher-profile' && socket && selectedTeacherId && (
-          <TeacherProfile
-            socket={socket}
-            teacherId={selectedTeacherId}
-            onBack={handleBackToTeacherList}
-          />
-        )}
+            {/* 講師詳細ページ */}
+            {currentPage === 'teacher-profile' && socket && selectedTeacherId && (
+              <TeacherProfile
+                socket={socket}
+                teacherId={selectedTeacherId}
+                onBack={handleBackToTeacherList}
+              />
+            )}
 
-        {/* 講師ダッシュボード */}
-        {currentPage === 'teacher-dashboard' && socket && (
-          <TeacherDashboard 
-            socket={socket} 
-            isConnected={isConnected}
-            onMatched={handleTeacherMatched}
-          />
-        )}
+            {/* 講師ダッシュボード */}
+            {currentPage === 'teacher-dashboard' && socket && (
+              <TeacherDashboard 
+                socket={socket} 
+                isConnected={isConnected}
+                onMatched={handleTeacherMatched}
+              />
+            )}
 
-        {/* 講師登録 */}
-        {currentPage === 'teacher-register' && (
-          <TeacherRegistration onSubmit={addTeacher} />
-        )}
+            {/* 講師登録 */}
+            {currentPage === 'teacher-register' && (
+              <TeacherRegistration onSubmit={addTeacher} />
+            )}
 
-        {/* レッスンルーム */}
-        {currentPage === 'lesson-room' && socket && matchedTeacher && (
-          <LessonRoom 
-            socket={socket} 
-            isConnected={isConnected}
-            teacher={matchedTeacher}
-            student={studentInfo || teacherInfo}
-            lessonData={lessonData}
-          />
-        )}
+            {/* レッスンルーム */}
+            {currentPage === 'lesson-room' && socket && matchedTeacher && (
+              <LessonRoom 
+                socket={socket} 
+                isConnected={isConnected}
+                teacher={matchedTeacher}
+                student={studentInfo || teacherInfo}
+                lessonData={lessonData}
+              />
+            )}
 
-        {/* 学習者登録 */}
-        {currentPage === 'learner-register' && (
-          <LearnerRegistration onSubmit={addLearner} />
-        )}
+            {/* 学習者登録 */}
+            {currentPage === 'learner-register' && (
+              <LearnerRegistration onSubmit={addLearner} />
+            )}
 
-        {/* ✅ 利用規約ページ */}
-        {currentPage === 'terms' && (
-          <TermsOfService />
-        )}
+            {/* 利用規約ページ */}
+            {currentPage === 'terms' && (
+              <TermsOfService />
+            )}
 
-        {/* ✅ プライバシーポリシーページ */}
-        {currentPage === 'privacy' && (
-          <PrivacyPolicy />
+            {/* プライバシーポリシーページ */}
+            {currentPage === 'privacy' && (
+              <PrivacyPolicy />
+            )}
+
+            {/* お問い合わせページ */}
+            {currentPage === 'contact' && (
+              <Contact />
+            )}
+          </>
         )}
       </main>
     </div>
