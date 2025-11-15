@@ -239,6 +239,40 @@ io.on('connection', (socket) => {
     broadcastStats();
   });
 
+// ===== チャットメッセージ =====
+
+  // メッセージを受け取る
+  socket.on('send_message', (data) => {
+    console.log(`\n💬 ========== メッセージ受信 ==========`);
+    console.log(`📤 送信者: ${data.sender}`);
+    console.log(`📝 メッセージ: ${data.text}`);
+    console.log(`⏰ タイムスタンプ: ${data.timestamp}\n`);
+
+    // アクティブなレッスンを探す
+    let foundLesson = null;
+    for (const [lessonId, lesson] of activeLessons.entries()) {
+      if (lesson.teacherId === socket.id || lesson.studentId === socket.id) {
+        foundLesson = lesson;
+        break;
+      }
+    }
+
+    if (!foundLesson) {
+      console.log(`❌ アクティブなレッスンが見つかりません\n`);
+      return;
+    }
+
+    console.log(`✅ レッスンが見つかりました。メッセージをリレーします`);
+    console.log(`   レッスンID: ${foundLesson.lessonId}\n`);
+
+    // 相手側に送信
+    const recipientId = socket.id === foundLesson.teacherId 
+      ? foundLesson.studentId 
+      : foundLesson.teacherId;
+
+    io.to(recipientId).emit('receive_message', data);
+  });
+
   // ===== WebRTC シグナリング =====
 
   // オファーを受け取る
@@ -352,6 +386,22 @@ io.on('connection', (socket) => {
   // レッスン終了
   socket.on('lesson_ended', (data) => {
     console.log(`🏁 レッスン終了要求:`, data);
+    
+    // 相手側にレッスン終了を通知
+    for (const [lessonId, lesson] of activeLessons.entries()) {
+      if (lesson.studentId === socket.id || lesson.teacherId === socket.id) {
+        const recipientId = socket.id === lesson.teacherId 
+          ? lesson.studentId 
+          : lesson.teacherId;
+
+        io.to(recipientId).emit('lesson_ended_by_other', {
+          message: 'レッスンが終了しました'
+        });
+
+        console.log(`✅ 相手側にレッスン終了を通知しました\n`);
+        break;
+      }
+    }
     
     // アクティブなレッスンをクリア
     for (const [lessonId, lesson] of activeLessons.entries()) {

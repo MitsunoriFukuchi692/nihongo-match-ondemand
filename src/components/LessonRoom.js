@@ -111,27 +111,21 @@ const LessonRoom = ({ socket, isConnected, teacher, student, lessonData }) => {
 
   // メッセージ送信
   const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  if (!inputMessage.trim()) return;
 
-    const messageData = {
-      sender: currentUserName,
-      text: inputMessage,
-      timestamp: new Date().toLocaleTimeString('ja-JP')
-    };
-
-    // ローカルに追加
-    setMessages((prev) => {
-      console.log('📤 自分のメッセージをローカルに追加');
-      return [...prev, { ...messageData, isSent: true }];
-    });
-
-    console.log('📤 メッセージ送信:', messageData);
-
-    // ソケットで送信
-    socketRef.current?.emit('send_message', messageData);
-
-    setInputMessage('');
+  const messageData = {
+    sender: currentUserName,
+    text: inputMessage,
+    timestamp: new Date().toLocaleTimeString('ja-JP')
   };
+
+  console.log('📤 メッセージ送信:', messageData);
+
+  // ソケットで送信（サーバー経由で相手に送信される）
+  socketRef.current?.emit('send_message', messageData);
+
+  setInputMessage('');
+};
 
   // レッスン終了
   const handleEndLesson = () => {
