@@ -116,12 +116,14 @@ const LessonRoom = ({ socket, isConnected, teacher, student, lessonData }) => {
   const messageData = {
     sender: currentUserName,
     text: inputMessage,
-    timestamp: new Date().toLocaleTimeString('ja-JP')
+    timestamp: new Date().toLocaleTimeString('ja-JP'),
+    isSent: true
   };
 
-  console.log('📤 メッセージ送信:', messageData);
+  // ローカルに追加（自分のメッセージ）
+  setMessages((prev) => [...prev, messageData]);
 
-  // ソケットで送信（サーバー経由で相手に送信される）
+  // サーバーに送信（相手に送信される）
   socketRef.current?.emit('send_message', messageData);
 
   setInputMessage('');
